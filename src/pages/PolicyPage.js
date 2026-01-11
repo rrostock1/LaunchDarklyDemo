@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import "../styles/PolicyPage.css";
-import { fetchPolicyDocuments } from "../api/policyDocuments";
 
 const PolicyPage = ({ user }) => {
   const { testFlag1 } = useFlags();
@@ -13,8 +12,12 @@ const PolicyPage = ({ user }) => {
   const [revertError, setRevertError] = useState(null);
 
   useEffect(() => {
-    //retrieve policy documents from mock API
-    fetchPolicyDocuments()
+    //retrieve policy documents from backend API
+    fetch("/api/policy-documents")
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch policy documents");
+        return response.json();
+      })
       .then(setPolicyDocuments)
       .catch(setError)
       .finally(() => setLoading(false));
