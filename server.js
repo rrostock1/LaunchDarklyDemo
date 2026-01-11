@@ -1,4 +1,5 @@
 const express = require('express');
+const LD = require('@launchdarkly/node-server-sdk');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const fetch = (...args) => import('node-fetch').then(mod => mod.default(...args));
@@ -6,16 +7,28 @@ require('dotenv').config();
 
 app.use(express.json());
 
+
+const ldSDKKey = process.env.LAUNCHDARKLY_SDK_KEY;
+const ldClient = LD.init(ldSDKKey);
+
+ldClient.waitForInitialization().then(() => {
+  console.log('LaunchDarkly client initialized');
+
 // Test route
 app.get('/', (req, res) => {
   res.send('Express backend is running!');
 });
 
+
+
 // Policy documents endpoint
-app.get('/api/policy-documents', (req, res) => {
+app.get('/api/policy-documents', async (req, res) => {
+  const query = req.query;
+  console.log("Received query parameters:", query);
+  const showNewLayout = await ldClient.variation("test-flag-1", query, false);
   // Simulate network delay
   setTimeout(() => {
-    res.json([
+    let policyDocs = [
       {
         id: "AFCABFD3-962E-4A78-B460-381DE6CC3A95",
         originalname: "Life Statement.pdf",
@@ -222,7 +235,9 @@ app.get('/api/policy-documents', (req, res) => {
         filename: "1756771372771-Life Statement-20250905.pdf",
         deletedOn: null,
       },
-    ]);
+    ];
+    policyDocs = showNewLayout ? policyDocs : policyDocs.filter(doc => !doc.premium);
+    res.json(policyDocs);
   }, 300);
 });
 
@@ -256,7 +271,10 @@ app.patch('/api/launchdarkly/update-flag', async (req, res) => {
     res.status(500).json({ error: 'Failed to update LaunchDarkly flag', details: err.message });
   }
 });
-
+}).catch(err => {
+  console.error("Error initializing LaunchDarkly client:", error);
+  process.exit(1);
+});
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });

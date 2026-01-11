@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import "../styles/PolicyPage.css";
 
-const PolicyPage = ({ user }) => {
+const PolicyPage = ({ context }) => {
   const { testFlag1 } = useFlags();
   const showNewLayout = testFlag1;
   const [policyDocuments, setPolicyDocuments] = useState(null);
@@ -13,7 +13,8 @@ const PolicyPage = ({ user }) => {
 
   useEffect(() => {
     //retrieve policy documents from backend API
-    fetch("/api/policy-documents")
+    let queryString = new URLSearchParams(context).toString();
+    fetch("/api/policy-documents?" + queryString)
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch policy documents");
         return response.json();
@@ -21,7 +22,7 @@ const PolicyPage = ({ user }) => {
       .then(setPolicyDocuments)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, []);
+  }, [context]);
 
   // Handler for revert button
   const handleRevert = async () => {
@@ -50,8 +51,8 @@ const PolicyPage = ({ user }) => {
 
   return (
     <div className="policy-document-container">
-      <div>{user ? `Welcome, ${user}!` : `Welcome, valued customer!`}</div>
-      {user && user === "admin" && showNewLayout ? (
+      <div>{context?.key ? `Welcome, ${context.key}!` : `Welcome, valued customer!`}</div>
+      {context?.key === "admin" && showNewLayout ? (
         <div>
           <button
             className="revert.primary"
