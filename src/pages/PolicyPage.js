@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useFlags } from "launchdarkly-react-client-sdk";
+import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import "../styles/PolicyPage.css";
 
 const PolicyPage = ({ context }) => {
@@ -10,6 +10,7 @@ const PolicyPage = ({ context }) => {
   const [error, setError] = useState(null);
   const [revertLoading, setRevertLoading] = useState(false);
   const [revertError, setRevertError] = useState(null);
+  const ldClient = useLDClient();
 
   useEffect(() => {
     //retrieve policy documents from backend API
@@ -23,7 +24,13 @@ const PolicyPage = ({ context }) => {
       .catch(setError)
       .finally(() => setLoading(false));
   }, [context]);
-
+  
+  const onDocumentClick = (newLayout) => {
+    console.log("Document clicked, newLayout:", newLayout);
+    if (ldClient) {
+      ldClient.track("document-clicked", { newLayout: newLayout } );
+    }
+  }
   // Handler for revert button
   const handleRevert = async () => {
     //Call launchDarkly update-flag endpoint to turn off the flag at the top level. 
@@ -51,7 +58,7 @@ const PolicyPage = ({ context }) => {
 
   return (
     <div className="policy-document-container">
-      <div>{context?.key ? `Welcome, ${context.key}!` : `Welcome, valued customer!`}</div>
+      <div className={showNewLayout ? "div-message-premium" : "div-message"}>{context?.key ? `Welcome, ${context.key}!` : `Welcome, valued customer!`}</div>
       {context?.key === "admin" && showNewLayout ? (
         <div>
           <button
@@ -65,7 +72,7 @@ const PolicyPage = ({ context }) => {
         </div>
       ) : null}
       {showNewLayout && (
-        <div className="banner">
+        <div className="banner div-message-premium">
           You are part of our Beta Group! Enjoy the new layout and viewing
           premium documents.
         </div>
@@ -84,16 +91,26 @@ const PolicyPage = ({ context }) => {
             </div>
             {policyDocuments.map((p) => (
               <div key={p.id} className={`trow`}>
-                <div
-                  className="tcolumnnotclickable"
+                  <div
+                  className="tcolumn"
                   title={JSON.stringify(p.tags).concat(" docdate:" + p.docdate)}
-                >
-                  {p.tags && p.tags.DocumentName
-                    ? p.tags.DocumentName
-                    : p.originalname}
-                </div>
-                <div className="tcolumnnotclickable">{p.tags.DateCreated}</div>
-                <div className="tcolumnnotclickable">{p.tags.Source}</div>
+                  >
+                    <button className="tcolumnanchor-premium" onClick={() => onDocumentClick(showNewLayout)}>
+                    {p.tags && p.tags.DocumentName
+                      ? p.tags.DocumentName
+                      : p.originalname}
+                    </button>
+                  </div>
+                  <div className="tcolumn">
+                    <button className="tcolumnanchor-premium" onClick={() => onDocumentClick(showNewLayout)}>
+                    {p.tags.DateCreated}
+                    </button>
+                  </div>
+                  <div className="tcolumn">
+                    <button className="tcolumnanchor-premium" onClick={() => onDocumentClick(showNewLayout)}>
+                      {p.tags.Source}
+                    </button>
+                  </div>
               </div>
             ))}
           </div>
@@ -110,20 +127,28 @@ const PolicyPage = ({ context }) => {
               })
               .map((p) => (
                 <div key={p.id} className={`trow premium`}>
-                  <div
-                    className="tcolumnnotclickable"
-                    title={JSON.stringify(p.tags).concat(
-                      " docdate:" + p.docdate,
-                    )}
-                  >
-                    {p.tags && p.tags.DocumentName
-                      ? p.tags.DocumentName
-                      : p.originalname}
-                  </div>
-                  <div className="tcolumnnotclickable">
-                    {p.tags.DateCreated}
-                  </div>
-                  <div className="tcolumnnotclickable">{p.tags.Source}</div>
+                    <div
+                      className="tcolumn"
+                      title={JSON.stringify(p.tags).concat(
+                        " docdate:" + p.docdate,
+                      )}
+                    >
+                      <button className="tcolumnanchor" onClick={() => onDocumentClick(showNewLayout)}>
+                      {p.tags && p.tags.DocumentName
+                        ? p.tags.DocumentName
+                        : p.originalname}
+                      </button>
+                    </div>
+                    <div className="tcolumn">
+                      <button className="tcolumnanchor" onClick={() => onDocumentClick(showNewLayout)}>
+                      {p.tags.DateCreated}
+                      </button>
+                    </div>
+                    <div className="tcolumn">
+                      <button className="tcolumnanchor" onClick={() => onDocumentClick(showNewLayout)}>
+                      {p.tags.Source}
+                      </button>
+                    </div>
                 </div>
               ))}
           </div>

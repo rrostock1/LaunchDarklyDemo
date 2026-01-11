@@ -63,11 +63,14 @@ body {
   color: gray;
   font-weight: 600;
 }
-
-a {
+.tcolumnanchor {
   color: #066803;
   font-weight: 600;
+  border: none;
+  outline: none;
+  background: none;
 }
+
 
 .tcolumn1 {
   width: 670px;
@@ -81,22 +84,6 @@ a {
   width: 300px;
 }
 
-.tcolumn4 {
-  width: 30px;
-}
-
-.tcolumn5 {
-  width: 30px;
-}
-
-.tcolumn6 {
-  width: 30px;
-}
-
-.tcolumn7 {
-  width: 50px;
-}
-
 
 .loader-container {
   width: 100%;
@@ -107,6 +94,13 @@ a {
   position: fixed;
   background: rgba(239, 239, 240, 0.834);
   z-index: 1;
+}
+.tcolumnanchor-premium {
+  color: #f77f00;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  background: none;
 }
 
 .div-message-premium {
