@@ -8,6 +8,7 @@ Clone this repo to a local folder, then run `npm install` to install necessary p
 Please place an .env file in the root directory containing the following lines: 
 
 LAUNCHDARKLY_API_TOKEN=api-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
 LAUNCHDARKLY_SDK_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 replacing the placholder values with the API token and SDK key values (provided separately).
