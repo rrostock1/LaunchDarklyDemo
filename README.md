@@ -9,7 +9,7 @@ Please place an .env file in the root directory containing the following lines:
 
 LAUNCHDARKLY_API_TOKEN=api-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
-LAUNCHDARKLY_SDK_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+LAUNCHDARKLY_SDK_KEY=sdk-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 replacing the placholder values with the API token and SDK key values (provided separately).
 In the project directory, please run `npm run dev` which will start both the frontend and backend servers.
